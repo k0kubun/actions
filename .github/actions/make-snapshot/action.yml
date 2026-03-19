@@ -33,7 +33,7 @@ runs:
         cd ruby
         git remote add fork https://github.com/k0kubun/ruby
         git fetch fork fix-snapshot-rbinc-build --depth=2
-        git diff --no-prefix HEAD FETCH_HEAD -- common.mk tool/prereq.status > /tmp/snapshot-fix.patch
+        git diff --no-prefix HEAD FETCH_HEAD -- common.mk tool/make-snapshot > /tmp/snapshot-fix.patch
         echo "=== Patch content ==="
         cat /tmp/snapshot-fix.patch
       shell: bash
