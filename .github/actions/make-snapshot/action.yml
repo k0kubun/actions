@@ -25,13 +25,19 @@ runs:
         sudo apt-get install --no-install-recommends -q -y build-essential git bison autoconf ruby p7zip-full curl
       shell: bash
     - name: Checkout ruby/ruby for tool/make-snapshot
-      run: git clone --single-branch --depth=1 https://github.com/ruby/ruby ruby
+      run: |
+        set -x
+        git clone --single-branch --depth=1 https://github.com/ruby/ruby ruby
+        cd ruby
+        git remote add fork https://github.com/k0kubun/ruby
+        git fetch fork fix-snapshot-rbinc-build
+        git cherry-pick FETCH_HEAD
       shell: bash
     - name: Fetch branches and notes
       run: |
         set -x
         cd ruby
-        git fetch --shallow-since='${{ inputs.shallow-since }}'
+        git fetch origin --shallow-since='${{ inputs.shallow-since }}'
         [ -n "${{ inputs.fetch-branch }}" ] && git fetch origin '+${{ inputs.fetch-branch }}:${{ inputs.fetch-branch }}'
         git fetch origin '+refs/notes/commits:refs/notes/commits'
         git fetch origin '+refs/notes/log-fix:refs/notes/log-fix'
