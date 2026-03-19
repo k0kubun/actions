@@ -25,13 +25,17 @@ runs:
         sudo apt-get install --no-install-recommends -q -y build-essential git bison autoconf ruby p7zip-full curl
       shell: bash
     - name: Checkout ruby/ruby for tool/make-snapshot
+      run: git clone --single-branch --depth=1 https://github.com/ruby/ruby ruby
+      shell: bash
+    - name: Fetch fix branch and create patch
       run: |
         set -x
-        git clone --single-branch --depth=1 https://github.com/ruby/ruby ruby
         cd ruby
         git remote add fork https://github.com/k0kubun/ruby
         git fetch fork fix-snapshot-rbinc-build --depth=2
-        git cherry-pick FETCH_HEAD~1 FETCH_HEAD
+        git diff --no-prefix HEAD...FETCH_HEAD -- common.mk tool/prereq.status > /tmp/snapshot-fix.patch
+        echo "=== Patch content ==="
+        cat /tmp/snapshot-fix.patch
       shell: bash
     - name: Fetch branches and notes
       run: |
@@ -45,8 +49,8 @@ runs:
     - name: Make snapshot
       run: |
         if [ -n "${{ inputs.generate-tar-bz2 }}" ]; then
-          ruby ruby/tool/make-snapshot -archname=$archname -srcdir=ruby pkg ${{ inputs.version }}
+          ruby ruby/tool/make-snapshot -archname=$archname -srcdir=ruby -patch_file=/tmp/snapshot-fix.patch pkg ${{ inputs.version }}
         else
-          ruby ruby/tool/make-snapshot -archname=$archname -srcdir=ruby -packages=gzip,xz,zip pkg ${{ inputs.version }}
+          ruby ruby/tool/make-snapshot -archname=$archname -srcdir=ruby -patch_file=/tmp/snapshot-fix.patch -packages=gzip,xz,zip pkg ${{ inputs.version }}
         fi
       shell: bash
