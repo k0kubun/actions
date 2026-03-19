@@ -30,8 +30,8 @@ runs:
         git clone --single-branch --depth=1 https://github.com/ruby/ruby ruby
         cd ruby
         git remote add fork https://github.com/k0kubun/ruby
-        git fetch fork fix-snapshot-rbinc-build
-        git cherry-pick FETCH_HEAD
+        git fetch fork fix-snapshot-rbinc-build --depth=2
+        git cherry-pick FETCH_HEAD~1 FETCH_HEAD
       shell: bash
     - name: Fetch branches and notes
       run: |
