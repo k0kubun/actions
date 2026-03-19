@@ -36,6 +36,8 @@ runs:
         git diff --no-prefix HEAD FETCH_HEAD -- common.mk tool/make-snapshot > /tmp/snapshot-fix.patch
         echo "=== Patch content ==="
         cat /tmp/snapshot-fix.patch
+        # Apply make-snapshot changes to the clone so the running script has them
+        git diff --no-prefix HEAD FETCH_HEAD -- tool/make-snapshot | patch -p0
       shell: bash
     - name: Fetch branches and notes
       run: |
